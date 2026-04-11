@@ -47,20 +47,20 @@ export default function ChatPage() {
 
   return (
     <div className="min-h-screen bg-[#faf9f7] flex flex-col">
-      <div className="flex flex-1 max-w-4xl mx-auto w-full px-4 py-6 flex-col gap-4">
+      <div className="flex flex-1 max-w-4xl mx-auto w-full px-3 sm:px-4 py-4 sm:py-6 flex-col gap-4">
         <div className="flex-1 bg-white rounded-2xl border border-black/5 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
             {messages.map((msg, i) => (
               <div
                 key={i}
-                className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
+                className={`flex gap-2 sm:gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
               >
                 <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold flex-shrink-0 ${
                   msg.role === 'assistant' ? 'bg-[#1a6b5c] text-white font-serif' : 'bg-[#fdf5e6] text-[#c8922a]'
                 }`}>
                   {msg.role === 'assistant' ? 'V' : '✦'}
                 </div>
-                <div className={`max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+                <div className={`max-w-[88%] sm:max-w-[75%] px-3 sm:px-4 py-3 rounded-2xl text-sm leading-relaxed break-words ${
                   msg.role === 'assistant'
                     ? 'bg-[#f4f2ee] text-[#1c1b19] rounded-tl-sm'
                     : 'bg-[#1a6b5c] text-white rounded-tr-sm'
@@ -87,20 +87,22 @@ export default function ChatPage() {
             <div ref={bottomRef} />
           </div>
 
-          <div className="px-4 pb-2 flex gap-2 flex-wrap">
-            {quickPrompts.map((p) => (
-              <button
-                key={p}
-                onClick={() => { setInput(p) }}
-                className="text-xs px-3 py-1.5 rounded-full border border-black/10 text-[#5a5750] hover:border-[#2d9e82] hover:text-[#1a6b5c] hover:bg-[#e8f5f1] transition-all"
-              >
-                {p}
-              </button>
-            ))}
+          <div className="px-4 pb-2">
+            <div className="-mx-4 px-4 flex gap-2 overflow-x-auto sm:mx-0 sm:px-0 sm:flex-wrap">
+              {quickPrompts.map((p) => (
+                <button
+                  key={p}
+                  onClick={() => { setInput(p) }}
+                  className="shrink-0 text-xs px-3 py-1.5 rounded-full border border-black/10 text-[#5a5750] hover:border-[#2d9e82] hover:text-[#1a6b5c] hover:bg-[#e8f5f1] transition-all"
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="p-4 border-t border-black/5">
-            <div className="flex gap-2 bg-[#faf9f7] border-[1.5px] border-black/10 rounded-xl px-4 py-2 focus-within:border-[#2d9e82] transition-colors">
+            <div className="flex gap-2 bg-[#faf9f7] border-[1.5px] border-black/10 rounded-xl px-3 sm:px-4 py-2 focus-within:border-[#2d9e82] transition-colors">
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -111,7 +113,7 @@ export default function ChatPage() {
                   }
                 }}
                 placeholder="Ask anything about travel..."
-                className="flex-1 bg-transparent text-sm resize-none outline-none max-h-28 leading-relaxed"
+                className="flex-1 min-w-0 bg-transparent text-sm resize-none outline-none max-h-28 leading-relaxed"
                 rows={1}
               />
               <button

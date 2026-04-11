@@ -31,13 +31,13 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#faf9f7] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#faf9f7] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="font-serif text-3xl font-bold text-[#1a6b5c] mb-2">Create account</h1>
-          <p className="text-[#5a5750]">Start planning your perfect trips</p>
+          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#1a6b5c] mb-2">Create account</h1>
+          <p className="text-[#5a5750] text-sm sm:text-base">Start planning your perfect trips</p>
         </div>
-        <div className="bg-white rounded-2xl shadow-sm border border-black/5 p-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-black/5 p-6 sm:p-8">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-medium text-[#8f8c85] uppercase tracking-wide mb-2">

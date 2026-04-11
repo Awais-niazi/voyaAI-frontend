@@ -17,17 +17,15 @@ const AuthContext = createContext<AuthContextType | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(() => isAuthenticated())
 
   useEffect(() => {
-    if (isAuthenticated()) {
-      authApi.me()
-        .then(setUser)
-        .catch(() => clearTokens())
-        .finally(() => setLoading(false))
-    } else {
-      setLoading(false)
-    }
+    if (!isAuthenticated()) return
+
+    authApi.me()
+      .then(setUser)
+      .catch(() => clearTokens())
+      .finally(() => setLoading(false))
   }, [])
 
   const login = async (email: string, password: string) => {

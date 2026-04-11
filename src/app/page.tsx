@@ -16,6 +16,8 @@ const INTERESTS = [
   { value: 'wellness', label: '🧘 Wellness & Spas' },
 ]
 
+const inputClass = "w-full h-11 border-[1.5px] border-black/10 rounded-lg px-3 text-sm text-black outline-none focus:border-[#2d9e82] bg-[#faf9f7] transition-colors"
+
 export default function HomePage() {
   const router = useRouter()
   const [destination, setDestination] = useState('')
@@ -64,23 +66,23 @@ export default function HomePage() {
     <div className="min-h-screen bg-[#faf9f7]">
       {/* Hero */}
       <div
-        className="px-8 py-20 text-center relative overflow-hidden"
+        className="px-4 sm:px-8 py-12 sm:py-20 text-center relative overflow-hidden"
         style={{ background: 'linear-gradient(160deg, #1a6b5c 0%, #0f4d3f 60%, #0a3329 100%)' }}
       >
         <div className="inline-block bg-white/10 text-[#a8dfd0] text-xs font-medium tracking-widest uppercase px-4 py-1.5 rounded-full mb-5">
           ✦ AI-Powered Travel Planning
         </div>
-        <h1 className="font-serif text-5xl md:text-6xl font-bold text-white leading-tight mb-4">
+        <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight mb-4">
           Your perfect trip,<br />
           <em className="text-[#a8dfd0]">planned in seconds</em>
         </h1>
-        <p className="text-white/60 text-lg max-w-md mx-auto mb-10 font-light">
+        <p className="text-white/60 text-base sm:text-lg max-w-md mx-auto mb-8 sm:mb-10 font-light px-4">
           Tell us where you want to go. Our AI builds a complete itinerary tailored to your budget and interests.
         </p>
 
         {/* Planner Card */}
-        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-3xl mx-auto text-left relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div className="bg-white rounded-2xl shadow-2xl p-5 sm:p-8 max-w-3xl mx-auto text-left relative z-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-xs font-medium text-[#8f8c85] uppercase tracking-wide mb-2">
                 Destination
@@ -89,7 +91,7 @@ export default function HomePage() {
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
                 placeholder="e.g. Tokyo, Japan"
-                className="w-full h-11 border-[1.5px] border-black/10 rounded-lg px-3 text-sm outline-none focus:border-[#2d9e82] bg-[#faf9f7] transition-colors"
+                className={inputClass}
               />
             </div>
             <div>
@@ -99,7 +101,7 @@ export default function HomePage() {
               <select
                 value={numDays}
                 onChange={(e) => setNumDays(e.target.value)}
-                className="w-full h-11 border-[1.5px] border-black/10 rounded-lg px-3 text-sm outline-none focus:border-[#2d9e82] bg-[#faf9f7] transition-colors"
+                className={inputClass}
               >
                 {['3', '5', '7', '10', '14'].map((d) => (
                   <option key={d} value={d}>{d} days</option>
@@ -113,7 +115,7 @@ export default function HomePage() {
               <select
                 value={budgetLevel}
                 onChange={(e) => setBudgetLevel(e.target.value)}
-                className="w-full h-11 border-[1.5px] border-black/10 rounded-lg px-3 text-sm outline-none focus:border-[#2d9e82] bg-[#faf9f7] transition-colors"
+                className={inputClass}
               >
                 <option value="budget">Budget — under $50/day</option>
                 <option value="mid">Mid-range — $50–150/day</option>
@@ -127,7 +129,7 @@ export default function HomePage() {
               <select
                 value={travelStyle}
                 onChange={(e) => setTravelStyle(e.target.value)}
-                className="w-full h-11 border-[1.5px] border-black/10 rounded-lg px-3 text-sm outline-none focus:border-[#2d9e82] bg-[#faf9f7] transition-colors"
+                className={inputClass}
               >
                 <option value="solo">Solo traveler</option>
                 <option value="couple">Couple</option>
@@ -146,7 +148,7 @@ export default function HomePage() {
                 <button
                   key={i.value}
                   onClick={() => toggleInterest(i.value)}
-                  className={`px-4 py-2 rounded-full border text-sm transition-all ${
+                  className={`px-3 sm:px-4 py-2 rounded-full border text-xs sm:text-sm transition-all ${
                     interests.includes(i.value)
                       ? 'bg-[#e8f5f1] border-[#2d9e82] text-[#1a6b5c] font-medium'
                       : 'bg-[#faf9f7] border-black/10 text-[#5a5750] hover:border-[#2d9e82]'
@@ -167,7 +169,7 @@ export default function HomePage() {
           <button
             onClick={handleGenerate}
             disabled={loading}
-            className="w-full h-14 bg-[#1a6b5c] hover:bg-[#155c4f] text-white rounded-lg font-medium text-base flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            className="w-full h-12 sm:h-14 bg-[#1a6b5c] hover:bg-[#155c4f] text-white rounded-lg font-medium text-sm sm:text-base flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             {loading ? (
               <>
@@ -182,12 +184,12 @@ export default function HomePage() {
       </div>
 
       {/* Features */}
-      <div className="max-w-5xl mx-auto px-8 py-20">
+      <div className="max-w-5xl mx-auto px-4 sm:px-8 py-12 sm:py-20">
         <p className="text-xs font-medium tracking-widest uppercase text-[#2d9e82] mb-3">Why Voya.ai</p>
-        <h2 className="font-serif text-3xl font-semibold text-[#1c1b19] mb-12">
+        <h2 className="font-serif text-2xl sm:text-3xl font-semibold text-[#1c1b19] mb-8 sm:mb-12">
           Everything you need, nothing you don&apos;t
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
           {[
             { icon: '🗺️', title: 'Smart itinerary generation', desc: 'AI clusters attractions by location and optimises your daily route.' },
             { icon: '💰', title: 'Budget-aware planning', desc: 'Every suggestion filtered to match your spending level.' },
@@ -196,10 +198,10 @@ export default function HomePage() {
             { icon: '✏️', title: 'Fully editable trips', desc: 'Swap attractions, add restaurants, or shift days around.' },
             { icon: '⭐', title: 'Personalised to you', desc: 'The more you travel with Voya, the smarter it gets.' },
           ].map((f) => (
-            <div key={f.title} className="bg-white rounded-2xl border border-black/5 p-7 hover:-translate-y-1 hover:shadow-md transition-all">
+            <div key={f.title} className="bg-white rounded-2xl border border-black/5 p-5 sm:p-7 hover:-translate-y-1 hover:shadow-md transition-all">
               <div className="text-2xl mb-4">{f.icon}</div>
-              <h3 className="font-medium text-[#1c1b19] mb-2">{f.title}</h3>
-              <p className="text-sm text-[#5a5750] leading-relaxed">{f.desc}</p>
+              <h3 className="font-medium text-[#1c1b19] mb-2 text-sm sm:text-base">{f.title}</h3>
+              <p className="text-xs sm:text-sm text-[#5a5750] leading-relaxed">{f.desc}</p>
             </div>
           ))}
         </div>
