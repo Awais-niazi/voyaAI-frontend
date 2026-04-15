@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { tripsApi } from '@/lib/api'
+import { getDisplayErrorMessage, tripsApi } from '@/lib/api'
 import { isAuthenticated } from '@/lib/auth'
 
 const INTERESTS = [
@@ -53,10 +53,10 @@ export default function HomePage() {
         travel_style: travelStyle,
         interests,
       })
-      const full = await tripsApi.generate(trip.id)
-      router.push(`/results?id=${full.id}`)
-    } catch {
-      setError('Failed to generate itinerary. Please try again.')
+      const job = await tripsApi.createGenerationJob(trip.id)
+      router.push(`/results?id=${trip.id}&jobId=${job.id}`)
+    } catch (err) {
+      setError(getDisplayErrorMessage(err, 'Failed to generate itinerary. Please try again.'))
     } finally {
       setLoading(false)
     }
@@ -174,7 +174,7 @@ export default function HomePage() {
             {loading ? (
               <>
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Generating your itinerary...
+                Starting your itinerary...
               </>
             ) : (
               <>⚡ Generate My Itinerary</>

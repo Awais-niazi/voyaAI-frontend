@@ -1,14 +1,20 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { Suspense, useState, useRef, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { chatApi } from '@/lib/api'
+import { getDisplayErrorMessage } from '@/lib/api'
 import type { ChatMessage } from '@/types'
 
-export default function ChatPage() {
+function ChatContent() {
+  const searchParams = useSearchParams()
+  const tripId = searchParams.get('tripId') || undefined
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      content: "Hi! I'm your AI travel guide. Ask me anything about destinations, local customs, visa requirements, food, transport, or anything else travel-related. 🌍",
+      content: tripId
+        ? "Hi! I'm your AI travel guide. I can help with this trip's itinerary, local tips, transport, food, and any follow-up planning questions."
+        : "Hi! I'm your AI travel guide. Ask me anything about destinations, local customs, visa requirements, food, transport, or anything else travel-related. 🌍",
     },
   ])
   const [input, setInput] = useState('')
@@ -29,10 +35,16 @@ export default function ChatPage() {
     setLoading(true)
 
     try {
-      const reply = await chatApi.send(updated)
+      const reply = await chatApi.send(updated, tripId)
       setMessages([...updated, { role: 'assistant', content: reply }])
-    } catch {
-      setMessages([...updated, { role: 'assistant', content: 'Sorry, something went wrong. Please try again.' }])
+    } catch (err) {
+      setMessages([
+        ...updated,
+        {
+          role: 'assistant',
+          content: getDisplayErrorMessage(err, 'Sorry, something went wrong. Please try again.'),
+        },
+      ])
     } finally {
       setLoading(false)
     }
@@ -130,5 +142,17 @@ export default function ChatPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#faf9f7] flex items-center justify-center">
+        <div className="w-10 h-10 border-2 border-[#1a6b5c]/20 border-t-[#1a6b5c] rounded-full animate-spin" />
+      </div>
+    }>
+      <ChatContent />
+    </Suspense>
   )
 }

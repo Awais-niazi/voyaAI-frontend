@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
+import { getDisplayErrorMessage } from '@/lib/api'
 
 export default function RegisterPage() {
   const { register } = useAuth()
@@ -21,10 +22,8 @@ export default function RegisterPage() {
     try {
       await register(email, password, fullName)
       router.push('/')
-    } catch (err: unknown) {
-      const message = (err as { response?: { data?: { detail?: string } } })
-        ?.response?.data?.detail
-      setError(message || 'Registration failed')
+    } catch (err) {
+      setError(getDisplayErrorMessage(err, 'Registration failed'))
     } finally {
       setLoading(false)
     }

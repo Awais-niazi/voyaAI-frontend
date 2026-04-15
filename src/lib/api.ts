@@ -4,6 +4,7 @@ import type {
   TokenResponse,
   User,
   Trip,
+  TripGenerationJob,
   TripWithItinerary,
   TripCreateRequest,
   ChatMessage,
@@ -16,6 +17,64 @@ const api = axios.create({
   baseURL: `${BASE_URL}/api/v1`,
   headers: { 'Content-Type': 'application/json' },
 })
+
+export class ApiError extends Error {
+  status?: number
+  retryAfter?: number
+
+  constructor(message: string, status?: number, retryAfter?: number) {
+    super(message)
+    this.name = 'ApiError'
+    this.status = status
+    this.retryAfter = retryAfter
+  }
+}
+
+const getErrorMessage = (error: unknown, fallback: string) => {
+  if (axios.isAxiosError(error)) {
+    const detail = error.response?.data?.detail
+    if (typeof detail === 'string' && detail.trim()) {
+      return detail
+    }
+  }
+
+  if (error instanceof Error && error.message.trim()) {
+    return error.message
+  }
+
+  return fallback
+}
+
+const toApiError = (error: unknown, fallback: string) => {
+  if (error instanceof ApiError) {
+    return error
+  }
+
+  if (axios.isAxiosError(error)) {
+    const retryAfterHeader = error.response?.headers?.['retry-after']
+    const retryAfter = typeof retryAfterHeader === 'string'
+      ? Number.parseInt(retryAfterHeader, 10)
+      : undefined
+
+    return new ApiError(
+      getErrorMessage(error, fallback),
+      error.response?.status,
+      Number.isFinite(retryAfter) ? retryAfter : undefined,
+    )
+  }
+
+  return new ApiError(getErrorMessage(error, fallback))
+}
+
+export const getDisplayErrorMessage = (error: unknown, fallback: string) => {
+  const apiError = toApiError(error, fallback)
+
+  if (apiError.status === 429 && apiError.retryAfter) {
+    return `${apiError.message} Try again in about ${apiError.retryAfter} seconds.`
+  }
+
+  return apiError.message
+}
 
 // Attach token to every request
 api.interceptors.request.use((config) => {
@@ -34,7 +93,7 @@ api.interceptors.response.use(
       clearTokens()
       window.location.href = '/login'
     }
-    return Promise.reject(error)
+    return Promise.reject(toApiError(error, 'Request failed'))
   }
 )
 
@@ -75,6 +134,26 @@ export const tripsApi = {
 
   generate: async (trip_id: string): Promise<TripWithItinerary> => {
     const { data } = await api.post('/trips/generate', { trip_id })
+    return data
+  },
+
+  generateAsync: async (trip_id: string): Promise<TripGenerationJob> => {
+    const { data } = await api.post('/trips/generate-async', { trip_id })
+    return data
+  },
+
+  createGenerationJob: async (trip_id: string): Promise<TripGenerationJob> => {
+    const { data } = await api.post(`/trips/${trip_id}/generation-jobs`)
+    return data
+  },
+
+  getGenerationJob: async (jobId: string): Promise<TripGenerationJob> => {
+    const { data } = await api.get(`/trips/generation-jobs/${jobId}`)
+    return data
+  },
+
+  getLatestGenerationJob: async (tripId: string): Promise<TripGenerationJob> => {
+    const { data } = await api.get(`/trips/${tripId}/generation-jobs/latest`)
     return data
   },
 

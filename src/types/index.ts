@@ -66,6 +66,16 @@ export interface TripWithItinerary extends Trip {
   budget_plan: BudgetPlan | null
 }
 
+export interface TripGenerationJob {
+  id: string
+  trip_id: string
+  user_id: string
+  status: 'pending' | 'running' | 'completed' | 'failed'
+  error_message: string | null
+  created_at: string
+  updated_at: string
+}
+
 export interface ChatMessage {
   role: 'user' | 'assistant'
   content: string

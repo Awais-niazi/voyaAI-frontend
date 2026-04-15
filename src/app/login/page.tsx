@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
+import { getDisplayErrorMessage } from '@/lib/api'
 
 const inputClass = "w-full h-11 border border-black/10 rounded-lg px-3 text-sm text-black outline-none focus:border-[#2d9e82] transition-colors bg-white"
 
@@ -22,8 +23,8 @@ export default function LoginPage() {
     try {
       await login(email, password)
       router.push('/')
-    } catch {
-      setError('Invalid email or password')
+    } catch (err) {
+      setError(getDisplayErrorMessage(err, 'Invalid email or password'))
     } finally {
       setLoading(false)
     }
