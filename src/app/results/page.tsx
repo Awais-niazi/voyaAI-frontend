@@ -7,6 +7,9 @@ import type { Activity, ItineraryDay, TripGenerationJob, TripWithItinerary } fro
 
 const POLL_INTERVAL_MS = 3000
 
+const hasGeneratedContent = (trip: TripWithItinerary) =>
+  trip.itineraries.length > 0 || trip.status === 'generated'
+
 function ResultsContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -38,7 +41,7 @@ function ResultsContent() {
 
         setTrip(tripData)
 
-        if (tripData.status === 'generated') {
+        if (hasGeneratedContent(tripData)) {
           setJob(null)
           return
         }
@@ -85,7 +88,7 @@ function ResultsContent() {
           const tripData = await tripsApi.get(tripId)
           if (cancelled) return
           setTrip(tripData)
-          if (tripData.status === 'generated') {
+          if (hasGeneratedContent(tripData)) {
             setJob(null)
             setIsPolling(false)
             return
@@ -154,10 +157,14 @@ function ResultsContent() {
     )
   }
 
+  const tripHasGeneratedContent = hasGeneratedContent(trip)
+
   if (
-    (job && (job.status === 'pending' || job.status === 'running')) ||
-    (job?.status === 'completed' && trip.status !== 'generated') ||
-    (!job && trip.status === 'generating')
+    !tripHasGeneratedContent && (
+      (job && (job.status === 'pending' || job.status === 'running')) ||
+      job?.status === 'completed' ||
+      (!job && trip.status === 'generating')
+    )
   ) {
     return (
       <div className="min-h-[calc(100vh-60px)] bg-[#faf9f7] flex items-center justify-center px-4 py-12">
@@ -184,7 +191,7 @@ function ResultsContent() {
     )
   }
 
-  if (job?.status === 'failed' || trip.status === 'failed') {
+  if (!tripHasGeneratedContent && (job?.status === 'failed' || trip.status === 'failed')) {
     return (
       <div className="min-h-[calc(100vh-60px)] bg-[#faf9f7] flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-2xl bg-white rounded-3xl border border-black/5 shadow-sm p-8 sm:p-10 text-center">
