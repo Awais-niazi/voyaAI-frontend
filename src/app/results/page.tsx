@@ -166,6 +166,10 @@ function ResultsContent() {
     }
   }
 
+  const handleRefreshPage = () => {
+    window.location.reload()
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px] gap-4">
@@ -213,6 +217,19 @@ function ResultsContent() {
               {isPolling ? 'Checking every few seconds for updates.' : 'Preparing the next status check.'}
             </p>
           </div>
+          {job?.status === 'completed' && (
+            <div className="mt-5">
+              <button
+                onClick={handleRefreshPage}
+                className="px-5 py-3 rounded-xl bg-[#1a6b5c] text-white text-sm font-medium hover:bg-[#155c4f] transition-colors"
+              >
+                Load itinerary now
+              </button>
+              <p className="text-xs text-[#8f8c85] mt-2">
+                If the trip is ready but this page is still waiting, this will refresh and load the latest result.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     )
