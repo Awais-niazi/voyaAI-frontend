@@ -67,7 +67,7 @@ function ResultsContent() {
   }, [initialJobId, router, tripId])
 
   useEffect(() => {
-    if (!tripId || !job || job.status === 'completed' || job.status === 'failed') {
+    if (!tripId || !job || job.status === 'failed') {
       return
     }
 
@@ -85,8 +85,11 @@ function ResultsContent() {
           const tripData = await tripsApi.get(tripId)
           if (cancelled) return
           setTrip(tripData)
-          setIsPolling(false)
-          return
+          if (tripData.status === 'generated') {
+            setJob(null)
+            setIsPolling(false)
+            return
+          }
         }
 
         if (nextJob.status === 'failed') {
@@ -151,7 +154,11 @@ function ResultsContent() {
     )
   }
 
-  if (job && (job.status === 'pending' || job.status === 'running' || trip.status === 'generating')) {
+  if (
+    (job && (job.status === 'pending' || job.status === 'running')) ||
+    (job?.status === 'completed' && trip.status !== 'generated') ||
+    (!job && trip.status === 'generating')
+  ) {
     return (
       <div className="min-h-[calc(100vh-60px)] bg-[#faf9f7] flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-2xl bg-white rounded-3xl border border-black/5 shadow-sm p-8 sm:p-10 text-center">
@@ -165,7 +172,9 @@ function ResultsContent() {
           </p>
           <div className="bg-[#f4f2ee] rounded-2xl px-5 py-4 text-left max-w-md mx-auto">
             <p className="text-xs uppercase tracking-wide text-[#8f8c85] mb-2">Current status</p>
-            <p className="text-sm font-medium text-[#1c1b19] capitalize">{job.status}</p>
+            <p className="text-sm font-medium text-[#1c1b19] capitalize">
+              {job?.status ?? trip.status}
+            </p>
             <p className="text-xs text-[#8f8c85] mt-2">
               {isPolling ? 'Checking every few seconds for updates.' : 'Preparing the next status check.'}
             </p>
