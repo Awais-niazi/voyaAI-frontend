@@ -10,6 +10,22 @@ const POLL_INTERVAL_MS = 3000
 const hasGeneratedContent = (trip: TripWithItinerary) =>
   trip.itineraries.length > 0 || trip.status === 'generated'
 
+const syncJobIdInUrl = (tripId: string, nextJobId: string | null) => {
+  if (typeof window === 'undefined') return
+
+  const params = new URLSearchParams(window.location.search)
+  params.set('id', tripId)
+
+  if (nextJobId) {
+    params.set('jobId', nextJobId)
+  } else {
+    params.delete('jobId')
+  }
+
+  const nextUrl = `${window.location.pathname}?${params.toString()}`
+  window.history.replaceState(null, '', nextUrl)
+}
+
 function ResultsContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -46,12 +62,20 @@ function ResultsContent() {
           return
         }
 
-        const jobData = initialJobId
-          ? await tripsApi.getGenerationJob(initialJobId)
-          : await tripsApi.getLatestGenerationJob(tripId)
+        let jobData: TripGenerationJob
+
+        try {
+          jobData = await tripsApi.getLatestGenerationJob(tripId)
+        } catch {
+          if (!initialJobId) {
+            throw new Error('Generation job not found')
+          }
+          jobData = await tripsApi.getGenerationJob(initialJobId)
+        }
 
         if (cancelled) return
         setJob(jobData)
+        syncJobIdInUrl(tripId, jobData.id)
       } catch (err) {
         if (cancelled) return
         setError(getDisplayErrorMessage(err, 'Trip not found'))
@@ -83,6 +107,7 @@ function ResultsContent() {
         if (cancelled) return
 
         setJob(nextJob)
+        syncJobIdInUrl(tripId, nextJob.id)
 
         if (nextJob.status === 'completed') {
           const tripData = await tripsApi.get(tripId)
@@ -90,6 +115,7 @@ function ResultsContent() {
           setTrip(tripData)
           if (hasGeneratedContent(tripData)) {
             setJob(null)
+            syncJobIdInUrl(tripId, null)
             setIsPolling(false)
             return
           }
@@ -130,6 +156,7 @@ function ResultsContent() {
     try {
       const nextJob = await tripsApi.createGenerationJob(tripId)
       setJob(nextJob)
+      syncJobIdInUrl(tripId, nextJob.id)
       const tripData = await tripsApi.get(tripId)
       setTrip(tripData)
     } catch (err) {
